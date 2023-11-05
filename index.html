@@ -144,16 +144,16 @@ Accept: text/turtle, application/ld+json;q=0.9, */*;q=0.8
 
 The response from the server in 1ⓑ will be similar to the following
 
-```HTTP
+<pre class="nolinks HTTP">
 HTTP/1.1 401 Unauthorized
 WWW-Authenticate: HttpSig realm="/comments/"
 Accept-Signature: sig1=("@method" "@target-uri");created;nonce
 Host: alice.name
 Date: Thu, 01 Apr 2021 00:01:03 GMT
-Link: <http://www.w3.org/ns/ldp#BasicContainer>; rel=type
-Link: <http://www.w3.org/ns/ldp#Resource>; rel=type
-Link: </comments/.acl>; rel=acl
-```
+Link: &lt;http://www.w3.org/ns/ldp#BasicContainer>; rel=type
+Link: &lt;http://www.w3.org/ns/ldp#Resource>; rel=type
+Link: &lt;/comments/.acl>; rel=acl
+</pre>
 
 * The `Link` header w1 a `rel` value of `acl` works as described in the [Web Access Control](https://solidproject.org/TR/wac) specification [[WAC]].
 It is what allows clients making a request on a resource to find out what credentials they need to gain the access they were denied.
@@ -257,21 +257,21 @@ In 5a of our example, the Resource Guard on the POD `alice.name` retrieves the r
 
 The server could also return an equivalent [Turtle 1.1](https://www.w3.org/TR/turtle/) representation:
 
-```Turtle
-@prefix security: <https://w3id.org/security#> .
-@prefix rdf: <http://www.w3.org/2000/01/rdf-schema#> .
+<pre class="nolinks turtle">
+@prefix security: &lt;https://w3id.org/security#> .
+@prefix rdf: &lt;http://www.w3.org/2000/01/rdf-schema#> .
 
-<#> a security:JsonWebKey2020 ;
-   security:controller </people/alice#i> ;
+&lt;#> a security:JsonWebKey2020 ;
+   security:controller &lt;/people/alice#i> ;
    security:publicKeyJwk """{
      "alg": "PS512",
-     "warning": "Don't use this key for real world examples, as the private key is publicly known. This is the key from <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-message-signatures-13#page-82>.",
+     "warning": "Don't use this key for real world examples, as the private key is publicly known. This is the key from &lt;https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-message-signatures-13#page-82>.",
       "use": "sig",
       "kty":"RSA",
       "e":"AQAB",
       "n":"r4tmm3r20Wd_PbqvP1s2-QEtvpuRaV8Yq40gjUR8y2Rjxa6dpG2GXHbPfvMs8ct-Lh1GH45x28Rw3Ry53mm-oAXjyQ86OnDkZ5N8lYbggD4O3w6M6pAvLkhk95AndTrifbIFPNU8PPMO7OyrFAHqgDsznjPFmTOtCEcN2Z1FpWgchwuYLPL-Wokqltd11nqqzi-bJ9cvSKADYdUAAN5WUtzdpiy6LbTgSxP7ociU4Tn0g5I6aDZJ7A8Lzo0KSyZYoA485mqcO0GVAdVw9lq4aOT9v6d-nb4bnNkQVklLQ3fVAvJm-xdDOp9LCNCN48V2pnDOkFV6-U9nV5oyc6XI2w"
    }"""^^rdf:JSON .
-```
+</pre>
 
 (See [issue 156: Ontology for `keyid` document](https://github.com/solid/authentication-panel/issues/156))
 
@@ -388,43 +388,43 @@ How can the client know which key to present? We illustrate this with a few exam
 
 In the simplest case, a Web Access Control rule document linked to from the `Link:` header of the resource the client received a `401` from, can specify a set of agents by describing their relation to a public key.
 
-```Turtle
-@prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
-@prefix cert: <http://www.w3.org/ns/auth/cert#> .
+<pre class="nolinks turtle">
+@prefix  acl:  &lt;http://www.w3.org/ns/auth/acl#>.
+@prefix cert: &lt;http://www.w3.org/ns/auth/cert#> .
 
-<#authorization1>
+&lt;#authorization1>
     a             acl:Authorization;
-    acl:accessTo  <https://alice.example/docs/shared-file1>;
+    acl:accessTo  &lt;https://alice.example/docs/shared-file1>;
     acl:mode      acl:Read,
                   acl:Write;
     acl:agent   [ cert:key </2019-09-02#k1> ],
-                <did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp>,
-    [ cert:key <https://iama.star/love/me/key#i> ] .
-```
+                &lt;did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp>,
+    [ cert:key &lt;https://iama.star/love/me/key#i> ] .
+</pre>
 
 Instead of listing agents individually in the ACL, they can
 be listed as belonging to a group
 
-```turtle
-<#authorization1>
+<pre class="nolinks turtle">
+&lt;#authorization1>
     a             acl:Authorization;
-    acl:accessTo  <https://alice.example/docs/shared-file1>;
+    acl:accessTo  &lt;https://alice.example/docs/shared-file1>;
     acl:mode      acl:Read,
                   acl:Write,
                   acl:Control;
-    acl:agentGroup <https://alice.example.com/work-groups#Accounting> .
-```
+    acl:agentGroup &lt;https://alice.example.com/work-groups#Accounting> .
+</pre>
 
 The agent Group document located at `https://alice.example.com/work-groups` can describe the users in various ways including by `keyid` as in this example
 
-```turtle
-<#Accounting>
+<pre class="nolinks turtle">
+&lt;#Accounting>
     a                vcard:Group;
     # Accounting group members:
-    vcard:hasMember  [ cert:key </keys/2019-09-02#k1> ],
-         [ cert:key <https://iama.star/love/me/key#i> ],
-                     <did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp> .
-```
+    vcard:hasMember  [ cert:key &lt;/keys/2019-09-02#k1> ],
+         [ cert:key &lt;https://iama.star/love/me/key#i> ],
+                     &lt;did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp> .
+</pre>
 
 The Group resource can itself be access controlled to be only visible to members of the Group.
 
@@ -447,8 +447,8 @@ Having selected a Credential, this can be passed in the response in (3) to the s
 
 ```HTTP
 GET /comments/c1 HTTP/1.1
-Authorization: HttpSig proof=sig1, cred="<https://alice.freedom/cred/BAEng>"
-Signature-Input: sig1=(); keyid="<https://alice.freedom/keys/alice-key-eng>"; created=1402170695
+Authorization: HttpSig proof=sig1, cred="&lt;https://alice.freedom/cred/BAEng>"
+Signature-Input: sig1=(); keyid="&lt;https://alice.freedom/keys/alice-key-eng>"; created=1402170695
 Signature: sig1=:cxieW5ZKV9R9A70+Ua1A/1FCvVayuE6Z77wDGNVFSiluSzR9TYFV
        vwUjeU6CTYUdbOByGMCee5q1eWWUOM8BIH04Si6VndEHjQVdHqshAtNJk2Quzs6WC
        2DkV0vysOhBSvFZuLZvtCmXRQfYGTGhZqGwq/AAmFbt5WNLQtDrEe0ErveEKBfaz+
@@ -516,15 +516,15 @@ For example Alice's `WebID` and `keyid` documents
 could be `https://alice.example/card` and return
 a representation with the following triples:
 
-```turtle
-<#me> a foaf:Person;
+<pre class="nolinks turtle">
+&lt;#me> a foaf:Person;
     foaf:name "Alice";
-    cert:key <#key1> .
+    cert:key &lt;#key1> .
 
-<#key1> a cert:RSAPublicKey;
+&lt;#key1> a cert:RSAPublicKey;
         cert:modulus "00cb25da76..."^^xsd:hexBinary;
         cert:exponent 65537 .
-```
+</pre>
 
 By signing the HTTP header with the private key corresponding to the public key published at `<https://alice.example/card#key1>` the client proves that it is the referrent of `<https://alice.example/card#me>` according to the description of the WebID Profile Document.
 
@@ -554,8 +554,8 @@ In this case the WebID could link to the hash of the key, or some other proof th
 Resources can describe in the linked-to `accessControl` document a class of agents, specified by attribute, who may access the resource in a given mode.
 For example, ISO could publish an [OWL](https://www.w3.org/TR/owl2-overview/) document at `https://iso.org/ont/People`, describing the set of people over 21, using an example from the [OWL2-Primer](https://www.w3.org/TR/2012/REC-owl2-primer-20121211/#a_DatatypeRestriction).
 
-```Turtle
-<#Over21> owl:equivalentClass [  a owl:Restriction;
+<pre class="nolinks turtle">
+&lt;#Over21> owl:equivalentClass [  a owl:Restriction;
       owl:onProperty :hasAge ;
       owl:someValuesFrom
           [ rdf:type   rdfs:Datatype ;
@@ -563,16 +563,16 @@ For example, ISO could publish an [OWL](https://www.w3.org/TR/owl2-overview/) do
             owl:withRestrictions (  [ xsd:minExclusive  21 ] )
           ]
        ] .
-```
+</pre>
 
 This would allow resources to be protected with a rule such as
 
-```Turtle
-<#adultPermission>
+<pre class="nolinks turtle">
+&lt;#adultPermission>
           :accessToClass :AdultContent;
           :agentClass iso:Over21 ;
           :mode :Read .
-```
+</pre>
 
 After receiving the response (2) in the above sequence diagram, a client can search for the relevant [Verifiable Credential](https://www.w3.org/TR/vc-data-model/) in its [Universal Wallet](https://w3c-ccg.github.io/universal-wallet-interop-spec/) (containing perhaps a Drivers License, Birth certificate, and MI7 007 license to kill), order these in a privacy lattice, and choose the one most appropriate for the task at hand.
 The URL for that Credential can then be sent in the header (3).
